@@ -1,0 +1,18 @@
+[Unit]
+Description=GenTeks AI Platform
+After=network.target mysql.service
+Wants=mysql.service
+
+[Service]
+Type=simple
+User=genteks
+WorkingDirectory=/home/genteks/openmanus/ManusProjects/workspace
+ExecStart=/home/genteks/openmanus/.venv/bin/python -m uvicorn web_api:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+Environment=PYTHONPATH=/home/genteks/openmanus/ManusProjects
+
+[Install]
+WantedBy=multi-user.target

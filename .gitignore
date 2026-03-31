@@ -1,0 +1,24 @@
+# API keys and secrets
+ManusProjects/config/config.toml
+
+# Virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Workspace data files
+ManusProjects/workspace/memory.json
+ManusProjects/workspace/memory_backup.json
+ManusProjects/workspace/last_response.json
+ManusProjects/workspace/backups/
+ManusProjects/workspace/static/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,26 @@
+[llm]
+model = "claude-sonnet-4-20250514"
+base_url = "https://api.anthropic.com/v1"
+api_key = "your-anthropic-api-key-here"
+max_tokens = 4096
+temperature = 0.0
+
+[llm.vision]
+model = "claude-sonnet-4-20250514"
+base_url = "https://api.anthropic.com/v1"
+api_key = "your-anthropic-api-key-here"
+max_tokens = 4096
+temperature = 0.0
+
+[daytona]
+daytona_api_key = "placeholder"
+daytona_server_url = "http://localhost:3986"
+daytona_target = "local"
+
+[search]
+engine = "duckduckgo"
+fallback_engines = ["bing"]
+lang = "en"
+country = "us"
+retry_delay = 60
+max_retries = 3
