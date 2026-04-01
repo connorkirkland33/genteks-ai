@@ -482,7 +482,17 @@ function showResult(id,data,isErr=false){
 function copyQuickResult(){
   const el=document.getElementById('quick-result');
   const text=el._rawContent||el.innerText||'';
-  navigator.clipboard.writeText(text).then(()=>toast('Response copied','success')).catch(()=>toast('Copy failed','error'));
+  try{
+    if(navigator.clipboard&&window.isSecureContext){
+      navigator.clipboard.writeText(text).then(()=>toast('Response copied','success'));
+    }else{
+      const ta=document.createElement('textarea');
+      ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+      document.body.appendChild(ta);ta.focus();ta.select();
+      document.execCommand('copy');document.body.removeChild(ta);
+      toast('Response copied','success');
+    }
+  }catch(e){toast('Copy failed','error');}
 }
 function clearQuickResult(){
   const el=document.getElementById('quick-result');
@@ -626,12 +636,23 @@ function appendMsg(role,content,ts,save=false,images=[]){
 }
 
 function copyMsgContent(btn,text){
-  navigator.clipboard.writeText(text).then(()=>{
+  const doCopy=()=>{
     const orig=btn.innerHTML;
     btn.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Copied`;
     btn.classList.add('copied');
     setTimeout(()=>{btn.innerHTML=orig;btn.classList.remove('copied');},2000);
-  }).catch(()=>toast('Failed to copy','error'));
+  };
+  try{
+    if(navigator.clipboard&&window.isSecureContext){
+      navigator.clipboard.writeText(text).then(doCopy);
+    }else{
+      const ta=document.createElement('textarea');
+      ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+      document.body.appendChild(ta);ta.focus();ta.select();
+      document.execCommand('copy');document.body.removeChild(ta);
+      doCopy();
+    }
+  }catch(e){toast('Copy failed','error');}
 }
 
 // TYPEWRITER - word by word with blinking cursor
@@ -641,23 +662,22 @@ function typewriterAppend(role,content,ts,images=[]){
   const div=document.createElement('div');
   div.className=`message ${role==='error'?'error-msg':role} fade-in`;
   const t=ts?new Date(ts).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}):new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-  const safeContent=content.replace(/\\/g,'\\\\').replace(/`/g,'\\`');
   const imgHtml=(images&&images.length)?images.map(f=>`<div style="margin-top:10px"><img src="/api/files/download/${encodeURIComponent(f)}" style="max-width:100%;border-radius:8px;border:1px solid var(--border2)" alt="${f}"></div>`).join(''):'';
   div.innerHTML=`<div class="msg-meta">GENTEKS AI · ${t}</div>
     <div class="msg-bubble" id="tw-target"></div>
     <div class="msg-actions" style="pointer-events:none;opacity:0">
-      <button class="msg-action-btn" id="copy-btn-target">
+      <button class="msg-action-btn" id="tw-copy-btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy
       </button>
     </div>`;
-  const copyBtn=div.querySelector('#copy-btn-target');
-  copyBtn.removeAttribute('id');
-  copyBtn.addEventListener('click',()=>copyMsgContent(copyBtn,content));
   msgs.appendChild(div);
   msgs.scrollTop=msgs.scrollHeight;
   const bubble=div.querySelector('#tw-target');
   bubble.removeAttribute('id');
   const actions=div.querySelector('.msg-actions');
+  const copyBtn=div.querySelector('#tw-copy-btn');
+  copyBtn.removeAttribute('id');
+  copyBtn.addEventListener('click',()=>copyMsgContent(copyBtn,content));
   // Split into words for streaming
   const words=content.split(/(\s+)/);
   let built='';
