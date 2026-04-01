@@ -1,30 +1,31 @@
-# GenTeks AI
+# GenTeks AI Platform
 
-An internal AI platform built for GenTeks, a full-service IT Managed Service Provider based in Las Vegas, NV. Built on OpenManus + Claude Sonnet, GenTeks AI replaces a commercial AI subscription (~$1,000/month) with a self-hosted autonomous agent platform delivering equivalent capability at a fraction of the cost.
+An internal AI platform built for GenTeks IT — a family-owned Managed Service Provider based in Las Vegas, NV with operations in Denver, CO. Built to replace a commercial AI subscription with a self-hosted solution delivering approximately 10x usage capacity at a fraction of the cost.
+
+**Live Platform:** http://163.245.216.199:8000
 
 ---
 
 ## Overview
 
-GenTeks AI is a production-ready internal tool that gives the GenTeks team access to an autonomous AI agent through a branded web interface. Employees can use it to automate research, generate professional documents, draft client communications, and handle business tasks — all without leaving the browser.
+GenTeks AI combines the OpenManus autonomous agent framework with Anthropic's Claude Sonnet model, served through a custom-built FastAPI web interface. The platform operates in two modes:
 
-The platform operates in two modes:
-
-- **Chat Mode** — Direct Claude API for instant answers, Q&A, and quick content generation. No agent overhead, responds in seconds.
-- **Task Mode** — Full OpenManus autonomous agent with real-time step display. Capable of web research, file creation, and multi-step task execution.
+- **Chat Mode** — Direct Claude API calls for instant answers, email drafts, IT research, and client communications
+- **Task Mode** — Full autonomous agent capable of web search, file creation, and multi-step task execution with real-time step display
 
 ---
 
 ## Features
 
-- **Dual-mode AI interface** — Chat and Task modes with a single toggle, each optimized for different use cases
-- **Real-time task streaming** — WebSocket-based step display shows exactly what the agent is doing as it works, similar to Manus AI's "Computer" interface
-- **Persistent chat history** — All conversations saved across browser sessions via localStorage, with clickable history in the sidebar
-- **File generation** — Creates real `.pptx`, `.docx`, and `.xlsx` files using python-pptx, python-docx, and openpyxl
-- **File browser** — Browse, download, and delete workspace output files directly from the UI
-- **Web research** — DuckDuckGo-powered search with automatic fallback engines
-- **Persistent memory** — JSON-based memory system for storing and retrieving context across sessions
-- **GenTeks branding** — Custom SVG logo, Zima Blue color scheme, Sora + JetBrains Mono typography
+- Dual-mode chat system (Chat and Task)
+- Real-time WebSocket streaming of agent steps
+- Image upload and vision analysis via Claude API
+- File generation — .docx, .xlsx, .pptx, .txt, .md, .csv
+- File browser with download and delete
+- Persistent memory system backed by MySQL 8.0
+- Chat history stored in browser localStorage
+- Responsive web interface — works on desktop and mobile
+- systemd service with auto-start and crash recovery
 
 ---
 
@@ -32,128 +33,143 @@ The platform operates in two modes:
 
 | Layer | Technology |
 |-------|-----------|
-| AI Backend | OpenManus + Anthropic Claude Sonnet |
-| Web Framework | FastAPI (Python) |
-| Real-time | WebSockets |
-| Frontend | Vanilla HTML/CSS/JS |
+| AI Backend | OpenManus |
+| AI Model | Claude Sonnet 4 (Anthropic) |
+| Web Framework | FastAPI |
+| ASGI Server | Uvicorn |
+| Frontend | Vanilla HTML/CSS/JS (single file) |
+| Database | MySQL 8.0 |
+| Web Search | DuckDuckGo |
 | File Generation | python-pptx, python-docx, openpyxl |
-| Web Search | DuckDuckGo Search |
-| Package Management | uv |
-| Runtime | Python 3.12 on Windows |
+| Runtime | Python 3.12 |
+| OS | Ubuntu 24.04 LTS |
+| Process Manager | systemd |
 
 ---
 
-## Architecture
+## Server Details
+
+| Item | Value |
+|------|-------|
+| Server IP | 163.245.216.199 |
+| Port | 8000 |
+| OS | Ubuntu 24.04 LTS |
+| App User | genteks |
+| App Directory | /home/genteks/openmanus/ |
+| Database | genteks_ai (MySQL 8.0) |
+| Service | genteks-ai.service |
+
+---
+
+## Accessing the Platform
+
+Open a browser and navigate to:
 
 ```
-Browser (dashboard.html)
-        │
-        ├── Chat Mode → /api/chat → Claude API (direct, instant)
-        │
-        └── Task Mode → /api/prompt + WebSocket /ws/task/{id}
-                              │
-                        OpenManus Agent
-                              │
-                    ┌─────────┼─────────┐
-                    │         │         │
-               WebSearch  BrowserUse  PythonExecute
-                    │         │         │
-                  Files    Research   Documents
-                              │
-                        Workspace (output files)
+http://163.245.216.199:8000
+```
+
+No login required. The platform is accessible from any device on the network.
+
+---
+
+## File Structure
+
+```
+genteks-ai/
+├── README.md
+├── DOCS.md                            # Full platform documentation
+├── .gitignore
+├── genteks-ai.service                 # systemd service definition
+├── setup_server.sh                    # Automated server setup script
+│
+└── ManusProjects/
+    ├── main.py                        # Agent entry point
+    ├── requirements.txt               # Python dependencies
+    ├── config/
+    │   ├── config.toml                # Active config (gitignored)
+    │   └── config.example.toml       # Safe template
+    ├── app/
+    │   ├── agent/                     # Agent definitions
+    │   ├── prompt/                    # System prompts
+    │   └── tool/                      # Agent tools
+    └── workspace/
+        ├── web_api.py                 # FastAPI server
+        ├── dashboard.html             # Web interface
+        ├── memory_manager.py          # MySQL/JSON memory backend
+        ├── agent_system.py            # Agent management
+        └── schema.sql                 # MySQL schema
 ```
 
 ---
 
-## Project Structure
+## Service Management
 
-```
-OpenManus/
-├── .venv/                          # Python virtual environment
-├── ManusProjects/
-│   ├── main.py                     # Agent entry point + CLI
-│   ├── config/
-│   │   └── config.toml             # API keys and search config (gitignored)
-│   ├── app/
-│   │   ├── agent/
-│   │   │   └── manus.py            # Agent definition and tool registration
-│   │   ├── prompt/
-│   │   │   └── manus.py            # GenTeks system prompt
-│   │   └── tool/
-│   │       ├── memory.py           # Custom persistent memory tool
-│   │       ├── self_improve.py     # Safe file editing tool
-│   │       └── web_search.py       # Multi-engine web search
-│   └── workspace/
-│       ├── web_api.py              # FastAPI server + WebSocket streaming
-│       ├── dashboard.html          # Full web interface
-│       └── [output files]          # Generated documents and research
+```bash
+# Check status
+sudo systemctl status genteks-ai
+
+# Restart the service
+sudo systemctl restart genteks-ai
+
+# Stop the service
+sudo systemctl stop genteks-ai
+
+# View live logs
+sudo journalctl -u genteks-ai -f
+
+# View last 50 log lines
+sudo journalctl -u genteks-ai -n 50 --no-pager
 ```
 
 ---
 
-## Setup
+## Updating the Platform
 
-### Prerequisites
+```bash
+# SSH into the server
+ssh root@163.245.216.199
 
-- Python 3.12+
-- uv package manager
-- Anthropic API key
+# Pull latest changes from GitHub
+cd /home/genteks/openmanus
+git pull
 
-### Installation
-
-```powershell
-# Clone the repository
-git clone https://github.com/YOUR_USERNAME/genteks-ai.git
-cd genteks-ai
-
-# Install uv if not already installed
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-
-# Create virtual environment and install dependencies
-uv venv .venv
-.venv\Scripts\Activate.ps1
-cd ManusProjects
-uv pip install -r requirements.txt --prerelease=allow
-
-# Install document generation libraries
-uv pip install python-pptx python-docx openpyxl anthropic
+# Restart the service
+sudo systemctl restart genteks-ai
 ```
 
-### Configuration
+---
 
-Copy the example config and add your API key:
+## Configuration
 
-```powershell
-copy ManusProjects\config\config.example.toml ManusProjects\config\config.toml
+The active config lives at:
+```
+/home/genteks/openmanus/ManusProjects/config/config.toml
 ```
 
-Edit `config.toml`:
+This file is gitignored and never committed. It contains the Anthropic API key and MySQL credentials. Use `config.example.toml` as a template if you need to recreate it.
 
-```toml
-[llm]
-model = "claude-sonnet-4-20250514"
-base_url = "https://api.anthropic.com/v1"
-api_key = "your-anthropic-api-key-here"
-max_tokens = 4096
-temperature = 0.0
-
-[search]
-engine = "duckduckgo"
-fallback_engines = ["bing"]
-lang = "en"
-country = "us"
+To update the API key:
+```bash
+nano /home/genteks/openmanus/ManusProjects/config/config.toml
+# Update api_key under [llm] and [llm.vision]
+sudo systemctl restart genteks-ai
 ```
 
-### Running
+---
 
-```powershell
-cd ManusProjects\workspace
-python web_api.py
+## Database
+
+```bash
+# Connect to MySQL
+mysql -u genteks -p genteks_ai
+
+# View memory entries
+SELECT id, content, category, timestamp FROM memories ORDER BY timestamp DESC LIMIT 10;
+
+# View database tables
+SHOW TABLES;
 ```
-
-Or use the included `StartWebPlatform.bat` for one-click startup.
-
-Access the platform at `http://localhost:8000`
 
 ---
 
@@ -161,31 +177,26 @@ Access the platform at `http://localhost:8000`
 
 | Phase | Status | Description |
 |-------|--------|-------------|
-| Phase 1 | ✅ Complete | Core platform, web UI, dual-mode chat, file browser |
-| Phase 2 | ⏭ Skipped | Authentication (post-deployment) |
-| Phase 3 | 🔜 Pending | PostgreSQL database layer |
-| Phase 4 | 🔜 Pending | Dedicated server migration |
-| Phase 5 | 🔜 Pending | VPS worker agents + multi-agent orchestration |
+| Phase 1 | ✅ Complete | Core platform, web UI, dual-mode chat, file browser, real-time streaming, MySQL memory |
+| Phase 2 | ⏭ Skipped | Authentication |
+| Phase 3 | 🔜 Next | MySQL chat history — migrate localStorage to database |
+| Phase 4 | 🔜 Planned | HTTPS, nginx reverse proxy, domain name |
+| Phase 5 | 🔜 Future | VPS worker agents, AutoTask integration, Datto RMM integration |
 
 ---
 
 ## Business Impact
 
-- **Replaced** a commercial AI platform (~$1,000/month) with a self-hosted solution
-- **Estimated cost** after migration: $140–550/month depending on API usage
-- **10x usage capacity** compared to the commercial subscription
-- Tailored specifically to MSP workflows — ticket automation, client documentation, cybersecurity research, and business task generation
+- Replaced ~$1,000/month commercial AI subscription
+- Estimated monthly cost: $140–550 depending on API usage
+- Approximately 10x usage capacity vs commercial plan
+- Custom system prompt tuned for MSP operations
+- Full file generation capability
+- Foundation for future automation via AutoTask and Datto RMM
 
 ---
 
-## Company Context
+## Built By
 
-[GenTeks](https://genteks.net) is a family-owned full-service IT MSP serving Las Vegas, NV and Denver, CO since 2018. Core services include managed IT, cybersecurity, backup, antivirus, VoIP, and commercial/residential IT support.
-
-Internal tech stack: AutoTask, IT Glue, Datto RMM, BullPhish ID, RapidFire Tools, Slack.
-
----
-
-## License
-
-Private — internal use only. Not licensed for public distribution.
+Connor Kirkland — IT Support Technician / Contractor, GenTeks IT
+GitHub: [github.com/connorkirkland33/genteks-ai](https://github.com/connorkirkland33/genteks-ai)
