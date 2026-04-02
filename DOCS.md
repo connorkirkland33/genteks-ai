@@ -3,7 +3,7 @@
 **Version:** 1.0  
 **Last Updated:** April 2026  
 **Author:** Connor Kirkland  
-**Status:** Production — Live at http://163.245.216.199:8000
+**Status:** Production — Live at http://[SERVER_IP]:[PORT]
 
 ---
 
@@ -220,7 +220,7 @@ Startup check
 
 ## 6. API Reference
 
-All endpoints are served by FastAPI on port 8000.
+All endpoints are served by FastAPI on port [PORT].
 
 ### POST /api/chat
 Direct Claude API call. No agent, no tools. Returns instantly.
@@ -452,7 +452,7 @@ max_retries = 3
 [database]
 host = "localhost"
 port = 3306
-user = "genteks"
+user = "your-username"
 password = "your-db-password"
 database = "genteks_ai"
 ```
@@ -468,14 +468,14 @@ Use `config.example.toml` as a template. Never commit `config.toml`.
 - Python 3.12
 - MySQL 8.0
 - Git
-- Port 8000 open in firewall
+- Port # open in firewall
 
 ### Automated Setup
 The `setup_server.sh` script handles the entire server setup automatically:
 
 ```bash
 # SSH into the server
-ssh root@163.245.216.199
+ssh root@[SERVER_IP]
 
 # Upload the setup script (or clone the repo first)
 git clone https://github.com/connorkirkland33/genteks-ai.git
@@ -535,7 +535,7 @@ Fill in your Anthropic API key and MySQL password. Also add the `[database]` blo
 [database]
 host = "localhost"
 port = 3306
-user = "genteks"
+user = "your-username"
 password = "YOUR_DB_PASSWORD"
 database = "genteks_ai"
 ```
@@ -546,7 +546,7 @@ sudo systemctl status genteks-ai
 curl http://localhost:8000/api/status
 ```
 
-Access the platform at `http://163.245.216.199:8000`
+Access the platform at `http://[SERVER_IP]:[PORT]`
 
 ---
 
@@ -582,7 +582,7 @@ The service is configured to:
 ### Updating the Platform
 ```bash
 # SSH into the server
-ssh root@163.245.216.199
+ssh root@[SERVER_IP]
 
 # Pull latest changes from GitHub
 cd /home/genteks/openmanus
@@ -598,7 +598,7 @@ sudo systemctl restart genteks-ai
 
 | Phase | Status | Description |
 |-------|--------|-------------|
-| Phase 1 | ✅ Complete | Core platform, web UI, dual-mode chat, file browser, real-time streaming, MySQL memory — live at 163.245.216.199:8000 |
+| Phase 1 | ✅ Complete | Core platform, web UI, dual-mode chat, file browser, real-time streaming, MySQL memory — live at [SERVER_IP]:[PORT] |
 | Phase 2 | ⏭ Skipped | Authentication (deferred to post-deployment) |
 | Phase 3 | ✅ Complete | MySQL database deployed — memories table active, chat_sessions and chat_messages tables ready |
 | Phase 4 | 🔜 Next | Wire MySQL chat history — migrate localStorage to database, cross-device persistence |

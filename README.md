@@ -2,7 +2,7 @@
 
 An internal AI platform built for GenTeks IT — a family-owned Managed Service Provider based in Las Vegas, NV with operations in Denver, CO. Built to replace a commercial AI subscription with a self-hosted solution delivering approximately 10x usage capacity at a fraction of the cost.
 
-**Live Platform:** http://163.245.216.199:8000
+**Live Platform:** http://[SERVER_IP]:[PORT]
 
 ---
 
@@ -51,8 +51,8 @@ GenTeks AI combines the OpenManus autonomous agent framework with Anthropic's Cl
 
 | Item | Value |
 |------|-------|
-| Server IP | 163.245.216.199 |
-| Port | 8000 |
+| Server IP | [SERVER_IP] |
+| Port | [PORT] |
 | OS | Ubuntu 24.04 LTS |
 | App User | genteks |
 | App Directory | /home/genteks/openmanus/ |
@@ -66,7 +66,7 @@ GenTeks AI combines the OpenManus autonomous agent framework with Anthropic's Cl
 Open a browser and navigate to:
 
 ```
-http://163.245.216.199:8000
+http://[SERVER_IP]:[PORT]
 ```
 
 No login required. The platform is accessible from any device on the network.
@@ -128,7 +128,7 @@ sudo journalctl -u genteks-ai -n 50 --no-pager
 
 ```bash
 # SSH into the server
-ssh root@163.245.216.199
+ssh root@[SERVER_IP]
 
 # Pull latest changes from GitHub
 cd /home/genteks/openmanus
