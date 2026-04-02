@@ -15,6 +15,16 @@ GenTeks AI combines the OpenManus autonomous agent framework with Anthropic's Cl
 
 ---
 
+## Screenshots
+
+![Dashboard](screenshots/dashboard.png)
+![Chat Mode](screenshots/chat_mode.png)
+![Task Mode](screenshots/task_mode_complete.png)
+![Files Panel](screenshots/files_panel.png)
+![Memory Panel](screenshots/memory_panel.png)
+
+---
+
 ## Features
 
 - Dual-mode chat system (Chat and Task)
