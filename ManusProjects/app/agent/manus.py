@@ -2,7 +2,7 @@ from typing import Dict, List, Optional
 
 from pydantic import Field, model_validator
 
-from app.agent.browser import BrowserContextHelper
+# from app.agent.browser import BrowserContextHelper
 from app.agent.toolcall import ToolCallAgent
 from app.config import config
 from app.logger import logger
@@ -47,7 +47,7 @@ class Manus(ToolCallAgent):
     )
 
     special_tool_names: list[str] = ["terminate"]
-    browser_context_helper: Optional[BrowserContextHelper] = None
+    # browser_context_helper: Optional[BrowserContextHelper] = None
 
     # Track connected MCP servers
     connected_servers: Dict[str, str] = Field(
@@ -58,7 +58,7 @@ class Manus(ToolCallAgent):
     @model_validator(mode="after")
     def initialize_helper(self) -> "Manus":
         """Initialize basic components synchronously."""
-        self.browser_context_helper = BrowserContextHelper(self)
+        # self.browser_context_helper = BrowserContextHelper(self)
         return self
 
     @classmethod
@@ -135,7 +135,7 @@ class Manus(ToolCallAgent):
 
     async def cleanup(self):
         """Clean up Manus agent resources."""
-        if self.browser_context_helper:
+        if False:  # browser_context_helper disabled
             await self.browser_context_helper.cleanup_browser()
         # Disconnect from all MCP servers only if we were initialized
         if self._initialized:
